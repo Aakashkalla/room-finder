@@ -1,14 +1,19 @@
 'use client'
 
 import { useEffect } from 'react'
-import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
-export default function HomePage() {
+type Role = 'owner' | 'finder'
+
+export function useAuthGuard(
+  requiredRole?: Role,
+  redirectIfProfileExists: boolean = false
+) {
   const router = useRouter()
 
   useEffect(() => {
-    const decideRoute = async () => {
+    const checkAuth = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession()
@@ -25,19 +30,21 @@ export default function HomePage() {
         .single()
 
       if (!profile) {
+        if (!redirectIfProfileExists) return
         router.replace('/select-role')
         return
       }
 
-      if (profile.role === 'owner') {
-        router.replace('/owner/dashboard')
-      } else {
-        router.replace('/rooms')
+      if (redirectIfProfileExists) {
+        router.replace('/')
+        return
+      }
+
+      if (requiredRole && profile.role !== requiredRole) {
+        router.replace('/')
       }
     }
 
-    decideRoute()
-  }, [router])
-
-  return <p className="p-6">Loading...</p>
+    checkAuth()
+  }, [router, requiredRole, redirectIfProfileExists])
 }
