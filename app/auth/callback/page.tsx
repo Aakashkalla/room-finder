@@ -10,7 +10,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuth = async () => {
       await supabase.auth.getSession()
-      router.replace('/debug')
+      router.replace('/')
     }
 
     handleAuth()
