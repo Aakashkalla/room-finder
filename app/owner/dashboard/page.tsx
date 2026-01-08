@@ -51,16 +51,14 @@ export default function OwnerDashboard() {
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold">My Rooms</h1>
         <button
-          onClick={() => router.push('/owner/add')}
+          onClick={() => router.push('/owner/add-room')}
           className="bg-black text-white px-4 py-2"
         >
           Add Room
         </button>
       </div>
 
-      {rooms.length === 0 && (
-        <p>No rooms added yet.</p>
-      )}
+      {rooms.length === 0 && <p>No rooms added yet.</p>}
 
       <div className="space-y-3">
         {rooms.map((room) => (
@@ -74,6 +72,29 @@ export default function OwnerDashboard() {
                 {room.location} • ₹{room.rent}
               </p>
             </div>
+
+            <button
+              onClick={async () => {
+                const confirmDelete = confirm(
+                  'Are you sure you want to delete this room?'
+                )
+                if (!confirmDelete) return
+
+                const { error } = await supabase
+                  .from('rooms')
+                  .delete()
+                  .eq('id', room.id)
+
+                if (!error) {
+                  setRooms((prev) =>
+                    prev.filter((r) => r.id !== room.id)
+                  )
+                }
+              }}
+              className="text-red-600 text-sm"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>
