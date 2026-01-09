@@ -52,7 +52,7 @@ export default function OwnerDashboard() {
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold">My Rooms</h1>
         <button
-          onClick={() => router.push('/owner/add-room')}
+          onClick={() => router.push('/owner/add')}
           className="bg-black text-white px-4 py-2"
         >
           Add Room
