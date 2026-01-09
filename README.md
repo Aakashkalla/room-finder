@@ -7,7 +7,7 @@ This project was built as part of an internship assignment and focuses on clean 
 ---
 
 ## 🔗 Live Demo
-_(Add deployed link here after deployment)_
+https://room-finder-one.vercel.app
 
 ---
 

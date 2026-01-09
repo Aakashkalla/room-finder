@@ -16,5 +16,5 @@ export default function AuthCallbackPage() {
     handleAuth()
   }, [router])
 
-  return <p className="p-6">Signing you in...</p>
+  return <p className="p-6 text-white">Signing you in...</p>
 }
