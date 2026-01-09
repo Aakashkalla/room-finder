@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useAuthGuard } from '@/lib/useAuthGuard'
 import { useRouter } from 'next/navigation'
+import { deleteRoomImages } from '@/lib/deleteRoomImages'
 
 type Room = {
   id: string
@@ -80,15 +81,36 @@ export default function OwnerDashboard() {
                 )
                 if (!confirmDelete) return
 
-                const { error } = await supabase
+                // 1️⃣ Fetch images for this room
+                const { data: roomData, error: fetchError } =
+                  await supabase
+                    .from('rooms')
+                    .select('images')
+                    .eq('id', room.id)
+                    .single()
+
+                if (fetchError) {
+                  alert(fetchError.message)
+                  return
+                }
+
+                // 2️⃣ Delete images from storage
+                if (roomData?.images?.length) {
+                  await deleteRoomImages(roomData.images)
+                }
+
+                // 3️⃣ Delete room row
+                const { error: deleteError } = await supabase
                   .from('rooms')
                   .delete()
                   .eq('id', room.id)
 
-                if (!error) {
+                if (!deleteError) {
                   setRooms((prev) =>
                     prev.filter((r) => r.id !== room.id)
                   )
+                } else {
+                  alert(deleteError.message)
                 }
               }}
               className="text-red-600 text-sm"
