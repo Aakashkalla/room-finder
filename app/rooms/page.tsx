@@ -21,7 +21,6 @@ export default function RoomsPage() {
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(true)
 
-  // filters
   const [location, setLocation] = useState('')
   const [minRent, setMinRent] = useState('')
   const [maxRent, setMaxRent] = useState('')
@@ -51,40 +50,29 @@ export default function RoomsPage() {
   useEffect(() => {
     let result = allRooms
 
-    // Location (highest priority)
     if (location.trim()) {
       result = result.filter((room) =>
-        room.location
-          .toLowerCase()
-          .includes(location.toLowerCase())
+        room.location.toLowerCase().includes(location.toLowerCase())
       )
     }
 
-    // Price range
     if (minRent) {
-      result = result.filter(
-        (room) => room.rent >= Number(minRent)
-      )
+      result = result.filter((room) => room.rent >= Number(minRent))
     }
 
     if (maxRent) {
-      result = result.filter(
-        (room) => room.rent <= Number(maxRent)
-      )
+      result = result.filter((room) => room.rent <= Number(maxRent))
     }
 
-    // Property type
     if (propertyType) {
       result = result.filter(
         (room) => room.property_type === propertyType
       )
     }
 
-    // Tenant preference
     if (tenantPreference) {
       result = result.filter(
-        (room) =>
-          room.tenant_preference === tenantPreference
+        (room) => room.tenant_preference === tenantPreference
       )
     }
 
@@ -99,24 +87,36 @@ export default function RoomsPage() {
   ])
 
   if (loading) {
-    return <p className="p-6">Loading rooms...</p>
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-zinc-400">
+        Loading rooms…
+      </div>
+    )
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold">Available Rooms</h1>
+    <div className="min-h-screen bg-zinc-950 px-6 py-8 space-y-8">
+      {/* Heading */}
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold text-white">
+          Available Rooms
+        </h1>
+        <p className="text-zinc-400 text-sm">
+          Browse rooms that match your preferences
+        </p>
+      </div>
 
       {/* Filters */}
-      <div className="grid gap-3 md:grid-cols-5">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 grid gap-3 md:grid-cols-5">
         <input
-          className="border p-2"
+          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
 
         <input
-          className="border p-2"
+          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="Min Rent"
           type="number"
           value={minRent}
@@ -124,7 +124,7 @@ export default function RoomsPage() {
         />
 
         <input
-          className="border p-2"
+          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="Max Rent"
           type="number"
           value={maxRent}
@@ -132,7 +132,7 @@ export default function RoomsPage() {
         />
 
         <select
-          className="border p-2"
+          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={propertyType}
           onChange={(e) => setPropertyType(e.target.value)}
         >
@@ -143,11 +143,9 @@ export default function RoomsPage() {
         </select>
 
         <select
-          className="border p-2"
+          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={tenantPreference}
-          onChange={(e) =>
-            setTenantPreference(e.target.value)
-          }
+          onChange={(e) => setTenantPreference(e.target.value)}
         >
           <option value="">Tenant Preference</option>
           <option value="Bachelor">Bachelor</option>
@@ -159,37 +157,43 @@ export default function RoomsPage() {
 
       {/* Rooms */}
       {filteredRooms.length === 0 && (
-        <p>No rooms match your filters.</p>
+        <p className="text-zinc-400">
+          No rooms match your filters.
+        </p>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredRooms.map((room) => (
           <div
             key={room.id}
-            className="border rounded overflow-hidden"
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-emerald-500/40 transition-all duration-200"
           >
             {room.images?.[0] && (
               <img
                 src={room.images[0]}
                 alt={room.title}
-                className="h-40 w-full object-cover"
+                className="h-44 w-full object-cover"
               />
             )}
 
-            <div className="p-4 space-y-1">
-              <h2 className="font-semibold">{room.title}</h2>
-              <p className="text-sm text-gray-600">
+            <div className="p-4 space-y-2">
+              <h2 className="text-lg font-semibold text-white">
+                {room.title}
+              </h2>
+
+              <p className="text-sm text-zinc-400">
                 {room.location}
               </p>
 
-              <p className="font-medium">
-                ₹{room.rent}
-              </p>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-emerald-400 font-semibold">
+                  ₹{room.rent}
+                </span>
 
-              <p className="text-sm">
-                {room.property_type} •{' '}
-                {room.tenant_preference}
-              </p>
+                <span className="text-xs text-zinc-400">
+                  {room.property_type} • {room.tenant_preference}
+                </span>
+              </div>
             </div>
           </div>
         ))}

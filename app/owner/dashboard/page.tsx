@@ -44,32 +44,53 @@ export default function OwnerDashboard() {
   }, [])
 
   if (loading) {
-    return <p className="p-6">Loading rooms...</p>
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-zinc-400">
+        Loading your rooms…
+      </div>
+    )
   }
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">My Rooms</h1>
+    <div className="min-h-screen bg-zinc-950 px-6 py-8 space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white">
+            My Rooms
+          </h1>
+          <p className="text-zinc-400 text-sm">
+            Manage the rooms you’ve listed
+          </p>
+        </div>
+
         <button
           onClick={() => router.push('/owner/add')}
-          className="bg-black text-white px-4 py-2"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-emerald-900/40"
         >
-          Add Room
+          + Add Room
         </button>
       </div>
 
-      {rooms.length === 0 && <p>No rooms added yet.</p>}
+      {/* Empty state */}
+      {rooms.length === 0 && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-10 text-center text-zinc-400">
+          You haven’t added any rooms yet.
+        </div>
+      )}
 
-      <div className="space-y-3">
+      {/* Rooms list */}
+      <div className="grid gap-4">
         {rooms.map((room) => (
           <div
             key={room.id}
-            className="border p-4 rounded flex justify-between items-center"
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-emerald-500/40 transition-all"
           >
-            <div>
-              <h2 className="font-semibold">{room.title}</h2>
-              <p className="text-sm text-gray-600">
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-white">
+                {room.title}
+              </h2>
+              <p className="text-sm text-zinc-400">
                 {room.location} • ₹{room.rent}
               </p>
             </div>
@@ -81,7 +102,6 @@ export default function OwnerDashboard() {
                 )
                 if (!confirmDelete) return
 
-                // 1️⃣ Fetch images for this room
                 const { data: roomData, error: fetchError } =
                   await supabase
                     .from('rooms')
@@ -94,12 +114,10 @@ export default function OwnerDashboard() {
                   return
                 }
 
-                // 2️⃣ Delete images from storage
                 if (roomData?.images?.length) {
                   await deleteRoomImages(roomData.images)
                 }
 
-                // 3️⃣ Delete room row
                 const { error: deleteError } = await supabase
                   .from('rooms')
                   .delete()
@@ -113,7 +131,7 @@ export default function OwnerDashboard() {
                   alert(deleteError.message)
                 }
               }}
-              className="text-red-600 text-sm"
+              className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
             >
               Delete
             </button>
